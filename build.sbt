@@ -1,6 +1,6 @@
 assemblySettings
 
-name := "template-scala-spark-dl4j-word2vec"
+name := "template-scala-opennlp"
 
 organization := "io.prediction"
 
