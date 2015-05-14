@@ -9,11 +9,7 @@ import org.apache.spark.SparkContext
 case class Stream(var events: List[String])
   extends DataStream {
 
-  override def nextToken = events match {
-    case h :: t =>
-      events = t
-      h
-  }
+  override def nextToken = events match { case h::t => events = t; h }
 
   override def hasNext = events.nonEmpty
 }
