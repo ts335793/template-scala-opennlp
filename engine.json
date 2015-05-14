@@ -10,7 +10,7 @@
   "algorithms": [{
       "name": "maxent",
       "params": {
-        "iterations": 100,
+        "iterations": 300,
         "cutoff": 2,
         "smoothing": true,
         "printMessagesWhileTraining": true
