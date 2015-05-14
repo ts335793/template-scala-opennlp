@@ -19,7 +19,7 @@ class Preparator
 
   def prepare(sc: SparkContext, trainingData: TrainingData): PreparedData = {
     val separator = " "
-    val events = trainingData.labeledPhrases.map[String] { lp => s"${lp.phrase} ${lp.sentiment}" }
+    val events = trainingData.labeledPhrases.map[String] { lp => s"${lp.phrase.toLowerCase} ${lp.sentiment}" }
     val dataStream = Stream(events.collect.toList)
     val basicEventStream = new BasicEventStream(dataStream, separator)
     new PreparedData(basicEventStream = basicEventStream, separator = separator)

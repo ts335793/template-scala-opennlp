@@ -29,7 +29,7 @@ class Algorithm(val ap: AlgorithmParams)
   }
 
   def predict(model: Model, query: Query): PredictedResult = {
-    val sentiment = model.gis.getBestOutcome(model.gis.eval(query.phrase.split(model.separator))).toInt
+    val sentiment = model.gis.getBestOutcome(model.gis.eval(query.phrase.toLowerCase.split(model.separator))).toInt
     PredictedResult(sentiment = sentiment)
   }
 }
