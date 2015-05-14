@@ -2,21 +2,18 @@
   "id": "default",
   "description": "Default settings",
   "engineFactory": "org.template.vanilla.VanillaEngine",
-  "sparkConf": {
-    "org.deeplearning4j.scaleout.perform.models.word2vec": {
-      "negative": 0
-    }
-  },
   "datasource": {
     "params" : {
       "appName": "MyAppName"
     }
   },
-  "algorithms": [
-    {
-      "name": "nearestWords",
+  "algorithms": [{
+      "name": "maxent",
       "params": {
-        "nearestWordsQuantity": 10
+        "iterations": 100,
+        "cutoff": 2,
+        "smoothing": true,
+        "printMessagesWhileTraining": true
       }
     }
   ]
