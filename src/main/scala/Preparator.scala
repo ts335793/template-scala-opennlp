@@ -1,18 +1,35 @@
 package org.template.vanilla
 
 import io.prediction.controller.PPreparator
-import io.prediction.data.storage.Event
+
+import opennlp.maxent.{DataStream, BasicEventStream}
 
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
+
+import scala.collection.JavaConversions._
+
+case class Stream(var events: List[String])
+  extends DataStream {
+
+  override def nextToken = events match {
+    case h :: t =>
+      events = t
+      h
+  }
+
+  override def hasNext = events.nonEmpty
+}
 
 class Preparator
   extends PPreparator[TrainingData, PreparedData] {
 
   def prepare(sc: SparkContext, trainingData: TrainingData): PreparedData = {
-    new PreparedData(phrases = trainingData.labeledPhrases.map { _.phrase })
+    val events = trainingData.labeledPhrases.map[String] { lp => s"${lp.phrase} ${lp.sentiment}" }
+    val dataStream = Stream(events.collect.toList)
+    val basicEventStream = new BasicEventStream(dataStream, " ")
+    new PreparedData(basicEventStream = basicEventStream)
   }
 }
 
-class PreparedData(val phrases : RDD[String]) extends Serializable
+class PreparedData(val basicEventStream: BasicEventStream) extends Serializable

@@ -6,6 +6,6 @@ engine_client = \
 
 while True:
   line = sys.stdin.readline()
-  print "Result:", engine_client.send_query({"word": line.rstrip()})
+  print "Result:", engine_client.send_query({"phrase": line.rstrip()})
 
 engine_client.close()

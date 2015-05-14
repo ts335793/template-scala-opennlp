@@ -2,17 +2,13 @@ package org.template.vanilla
 
 import io.prediction.controller.P2LAlgorithm
 import io.prediction.controller.Params
+import opennlp.model.AbstractModel
 
 import org.apache.spark.SparkContext
 
-import org.deeplearning4j.models.embeddings.WeightLookupTable
-import org.deeplearning4j.models.word2vec.Word2Vec
-import org.deeplearning4j.models.word2vec.wordstore.VocabCache
-import org.deeplearning4j.spark.models.embeddings.word2vec.{Word2Vec => SparkWord2Vec}
-
-import scala.collection.JavaConversions._
-
 import grizzled.slf4j.Logger
+
+import opennlp.maxent.GIS
 
 case class AlgorithmParams(nearestWordsQuantity: Integer) extends Params
 
@@ -22,27 +18,16 @@ class Algorithm(val ap: AlgorithmParams)
   @transient lazy val logger = Logger[this.type]
 
   def train(sc: SparkContext, data: PreparedData): Model = {
-    val (vocabCache, weightLookupTable) = {
-      val result = new SparkWord2Vec().train(data.phrases)
-      (result.getFirst, result.getSecond)
-    }
-    new Model(
-      vocabCache = vocabCache,
-      weightLookupTable = weightLookupTable
-    )
+    val gis = GIS.trainModel(data.basicEventStream, 100, 2, true, true)
+    new Model(gis = gis)
   }
 
   def predict(model: Model, query: Query): PredictedResult = {
-    val word2Vec = new Word2Vec.Builder()
-      .vocabCache(model.vocabCache)
-      .lookupTable(model.weightLookupTable)
-      .build()
-    val nearestWords = word2Vec.wordsNearest(query.word, ap.nearestWordsQuantity)
-    PredictedResult(nearestWords = nearestWords.toList)
+    val sentiment = model.gis.getBestOutcome(model.gis.eval(query.phrase.split(" "))).toInt
+    PredictedResult(sentiment = sentiment)
   }
 }
 
-class Model(
-  val vocabCache: VocabCache,
-  val weightLookupTable: WeightLookupTable
+case class Model(
+  gis: AbstractModel
 ) extends Serializable

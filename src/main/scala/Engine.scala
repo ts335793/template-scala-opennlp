@@ -3,9 +3,9 @@ package org.template.vanilla
 import io.prediction.controller.IEngineFactory
 import io.prediction.controller.Engine
 
-case class Query(word: String) extends Serializable
+case class Query(phrase: String) extends Serializable
 
-case class PredictedResult(nearestWords: List[String]) extends Serializable
+case class PredictedResult(sentiment: Int) extends Serializable
 
 object VanillaEngine extends IEngineFactory {
   def apply() = {
